@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لعبة الذاكرة | مجمع نيقية المسكوني</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400;500;600;700&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0f1c33;
+    --navy-2:#1f3158;
+    --gold:#c9a227;
+    --gold-light:#ecd078;
+    --cream:#f4ead2;
+    --maroon:#7d2e2e;
+    --ink:#241b12;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(201,162,39,0.10), transparent 45%),
+      radial-gradient(circle at 80% 90%, rgba(125,46,46,0.18), transparent 50%),
+      linear-gradient(160deg, var(--navy) 0%, var(--navy-2) 60%, var(--navy) 100%);
+    font-family:'Cairo', sans-serif;
+    color:var(--cream);
+    padding:28px 16px 60px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  /* ---------- Header ---------- */
+  .header{ text-align:center; max-width:640px; margin-bottom:18px; }
+
+  .eyebrow{
+    font-size:13px;
+    letter-spacing:3px;
+    color:var(--gold-light);
+    text-transform:uppercase;
+    opacity:0.85;
+    margin-bottom:6px;
+  }
+
+  h1{
+    font-family:'Markazi Text', serif;
+    font-weight:700;
+    font-size:46px;
+    background:linear-gradient(180deg, var(--gold-light), var(--gold));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    line-height:1.15;
+  }
+
+  .subtitle{
+    font-size:15px;
+    color:#cdd7ea;
+    margin-top:4px;
+    font-weight:600;
+  }
+
+  .flourish{ width:220px; height:24px; margin:14px auto 6px; opacity:0.9; }
+
+  .instructions{
+    font-size:13.5px;
+    color:#d9e1f0;
+    max-width:520px;
+    margin:10px auto 0;
+    line-height:1.9;
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(201,162,39,0.25);
+    border-radius:10px;
+    padding:10px 16px;
+  }
+
+  /* ---------- Stats bar ---------- */
+  .stats{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    justify-content:center;
+    margin:20px 0 26px;
+  }
+
+  .pill{
+    background:rgba(255,255,255,0.06);
+    border:1px solid rgba(201,162,39,0.35);
+    border-radius:999px;
+    padding:8px 18px;
+    font-size:14px;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:var(--cream);
+  }
+  .pill span.num{ color:var(--gold-light); font-size:16px; }
+
+  .btn-restart{
+    background:linear-gradient(180deg, var(--gold-light), var(--gold));
+    color:var(--ink);
+    border:none;
+    border-radius:999px;
+    padding:9px 22px;
+    font-family:'Cairo', sans-serif;
+    font-weight:800;
+    font-size:14px;
+    cursor:pointer;
+    box-shadow:0 4px 14px rgba(201,162,39,0.35);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn-restart:hover{ transform:translateY(-1px); box-shadow:0 6px 18px rgba(201,162,39,0.45); }
+  .btn-restart:active{ transform:translateY(0); }
+
+  /* ---------- Grid ---------- */
+  .board{
+    display:grid;
+    grid-template-columns:repeat(5, minmax(120px, 1fr));
+    gap:14px;
+    width:100%;
+    max-width:880px;
+  }
+
+  @media (max-width:760px){
+    .board{ grid-template-columns:repeat(4, 1fr); gap:10px; }
+    h1{ font-size:36px; }
+  }
+  @media (max-width:480px){
+    .board{ grid-template-columns:repeat(3, 1fr); gap:8px; }
+  }
+
+  .card{
+    aspect-ratio:3/4;
+    perspective:900px;
+    cursor:pointer;
+  }
+  .card.matched{ cursor:default; }
+
+  .card-inner{
+    position:relative;
+    width:100%; height:100%;
+    transition:transform 0.55s cubic-bezier(.4,.2,.2,1);
+    transform-style:preserve-3d;
+  }
+  .card.flipped .card-inner,
+  .card.matched .card-inner{ transform:rotateY(180deg); }
+
+  .face{
+    position:absolute; inset:0;
+    backface-visibility:hidden;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:8px;
+    text-align:center;
+  }
+
+  /* back of card (shown by default) */
+  .face-back{
+    background:
+      radial-gradient(circle, rgba(201,162,39,0.18) 0%, transparent 62%),
+      linear-gradient(150deg, var(--navy-2), var(--navy));
+    border:1.5px solid rgba(201,162,39,0.55);
+    box-shadow:inset 0 0 0 4px rgba(201,162,39,0.10), 0 4px 10px rgba(0,0,0,0.35);
+  }
+  .face-back::before{
+    content:"☦";
+    font-size:30px;
+    color:var(--gold-light);
+    text-shadow:0 0 10px rgba(236,208,120,0.55);
+    opacity:0.9;
+  }
+
+  /* front of card (revealed) */
+  .face-front{
+    transform:rotateY(180deg);
+    background:var(--cream);
+    color:var(--ink);
+    flex-direction:column;
+    gap:6px;
+    border:1.5px solid var(--gold);
+    box-shadow:inset 0 0 0 3px rgba(255,255,255,0.5);
+  }
+
+  .tag{
+    font-size:10.5px;
+    font-weight:800;
+    letter-spacing:1px;
+    padding:2px 10px;
+    border-radius:999px;
+    text-transform:uppercase;
+  }
+  .card[data-type="q"] .tag{ background:var(--maroon); color:var(--cream); }
+  .card[data-type="a"] .tag{ background:var(--gold); color:var(--ink); }
+
+  .card-text{
+    font-family:'Markazi Text', serif;
+    font-weight:600;
+    font-size:15px;
+    line-height:1.3;
+  }
+  @media (max-width:480px){ .card-text{ font-size:12.5px; } }
+
+  .card.matched .face-front{
+    animation:glow 1.6s ease-in-out infinite alternate;
+  }
+  @keyframes glow{
+    from{ box-shadow:inset 0 0 0 3px rgba(255,255,255,0.5), 0 0 8px rgba(201,162,39,0.25); }
+    to{ box-shadow:inset 0 0 0 3px rgba(255,255,255,0.5), 0 0 20px rgba(201,162,39,0.65); }
+  }
+
+  .card.shake .card-inner{ animation:shake .4s; }
+  @keyframes shake{
+    0%,100%{ transform:rotateY(180deg) translateX(0); }
+    25%{ transform:rotateY(180deg) translateX(-5px); }
+    75%{ transform:rotateY(180deg) translateX(5px); }
+  }
+
+  /* ---------- Win overlay ---------- */
+  .overlay{
+    position:fixed; inset:0;
+    background:rgba(8,12,24,0.78);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:50;
+    padding:20px;
+  }
+  .overlay.show{ display:flex; }
+
+  .modal{
+    background:linear-gradient(160deg, var(--navy-2), var(--navy));
+    border:1.5px solid var(--gold);
+    border-radius:18px;
+    padding:34px 30px;
+    max-width:380px;
+    text-align:center;
+    box-shadow:0 0 40px rgba(201,162,39,0.35);
+  }
+  .modal .icon{ font-size:40px; margin-bottom:10px; color:var(--gold-light); }
+  .modal h2{
+    font-family:'Markazi Text', serif;
+    font-size:30px;
+    color:var(--gold-light);
+    margin-bottom:8px;
+  }
+  .modal p{ font-size:14px; color:#d9e1f0; margin-bottom:18px; line-height:1.8; }
+  .modal .result-stats{ display:flex; justify-content:center; gap:18px; margin-bottom:20px; }
+  .modal .result-stats div{ font-size:13px; color:#cdd7ea; }
+  .modal .result-stats span{ display:block; font-size:20px; color:var(--gold-light); font-weight:800; }
+
+  footer{
+    margin-top:34px;
+    font-size:11.5px;
+    color:#8d9ab8;
+    text-align:center;
+  }
+</style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="eyebrow">مدرسة الأحد</div>
+    <h1>لعبة الذاكرة 🧠</h1>
+    <div class="subtitle">مجمع نيقية المسكوني الأول — ٣٢٥ م</div>
+    <svg class="flourish" viewBox="0 0 220 24" xmlns="http://www.w3.org/2000/svg">
+      <line x1="0" y1="12" x2="85" y2="12" stroke="#c9a227" stroke-width="1.2" opacity="0.7"/>
+      <text x="110" y="18" font-size="16" text-anchor="middle" fill="#ecd078">☦</text>
+      <line x1="135" y1="12" x2="220" y2="12" stroke="#c9a227" stroke-width="1.2" opacity="0.7"/>
+    </svg>
+    <div class="instructions">
+      قدامكم كروت أسئلة وكروت إجابات متغطية. افتحوا الكروت وحاولوا تلاقوا السؤال والإجابة اللي يخصوا بعض.
+      لو التطابق صح، الكارتين هيفضلوا مفتوحين. لو غلط، هيقفلوا تاني. كمّلوا لحد ما تلاقوا كل الأزواج 🙏
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="pill">🔄 المحاولات: <span class="num" id="moves">0</span></div>
+    <div class="pill">✅ الأزواج: <span class="num" id="pairsFound">0</span>/<span id="pairsTotal">10</span></div>
+    <div class="pill">⏱ الوقت: <span class="num" id="timer">٠٠:٠٠</span></div>
+    <button class="btn-restart" id="restartBtn">إعادة اللعب</button>
+  </div>
+
+  <div class="board" id="board"></div>
+
+  <footer>اضغطوا على كارتين في كل مرة لمحاولة إيجاد الزوج المتطابق</footer>
+
+  <div class="overlay" id="overlay">
+    <div class="modal">
+      <div class="icon">☦</div>
+      <h2>مبروك! لقيتوا كل الأزواج</h2>
+      <p>عاشت إيمانكم! كملتوا لعبة الذاكرة عن مجمع نيقية المسكوني بنجاح.</p>
+      <div class="result-stats">
+        <div>المحاولات<span id="finalMoves">0</span></div>
+        <div>الوقت<span id="finalTime">٠٠:٠٠</span></div>
+      </div>
+      <button class="btn-restart" id="playAgainBtn">العب تاني</button>
+    </div>
+  </div>
+
+<script>
+  const pairs = [
+    { q: "سنة المجمع",                             a: "٣٢٥ م" },
+    { q: "مين اللي عمل البدعة؟",                   a: "أريوس" },
+    { q: "كام واحد حضر؟",                          a: "٣١٨ أسقف" },
+    { q: "مين حامي الإيمان؟",                      a: "البابا أثناسيوس الرسولي" },
+    { q: "مين اللي كان ماسك المجمع؟",              a: "الإمبراطور قسطنطين" },
+    { q: "المكان",                                  a: "نيقية" },
+    { q: "عصر مين من الملوك؟",                     a: "الإمبراطور قسطنطين الكبير" },
+    { q: "مين الأستاذ اللي شرح الدرس الصبح؟",      a: "أستاذ جون" },
+    { q: "مين اتحكم عليه بالحرمان؟",                a: "أريوس" },
+    { q: "إيه اسم البدعة اللي حاربها المجمع؟",      a: "البدعة الأريوسية" },
+  ];
+
+  const board = document.getElementById('board');
+  const movesEl = document.getElementById('moves');
+  const pairsFoundEl = document.getElementById('pairsFound');
+  const pairsTotalEl = document.getElementById('pairsTotal');
+  const timerEl = document.getElementById('timer');
+  const overlay = document.getElementById('overlay');
+  const finalMovesEl = document.getElementById('finalMoves');
+  const finalTimeEl = document.getElementById('finalTime');
+
+  let cardsData = [];
+  let flipped = [];
+  let matchedCount = 0;
+  let moves = 0;
+  let locked = false;
+  let seconds = 0;
+  let timerInterval = null;
+
+  pairsTotalEl.textContent = toArabicDigits(pairs.length);
+
+  function toArabicDigits(n){
+    const map = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+    return String(n).split('').map(d => map[d] !== undefined ? map[d] : d).join('');
+  }
+
+  function formatTime(s){
+    const m = Math.floor(s/60).toString().padStart(2,'0');
+    const sec = (s%60).toString().padStart(2,'0');
+    return toArabicDigits(m) + ':' + toArabicDigits(sec);
+  }
+
+  function shuffle(arr){
+    for(let i = arr.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i+1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function buildDeck(){
+    let deck = [];
+    pairs.forEach((p, idx) => {
+      deck.push({ pairId: idx, type: 'q', text: p.q });
+      deck.push({ pairId: idx, type: 'a', text: p.a });
+    });
+    return shuffle(deck);
+  }
+
+  function startTimer(){
+    if(timerInterval) return;
+    timerInterval = setInterval(() => {
+      seconds++;
+      timerEl.textContent = formatTime(seconds);
+    }, 1000);
+  }
+
+  function stopTimer(){
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+
+  function render(){
+    board.innerHTML = '';
+    cardsData = buildDeck();
+    cardsData.forEach((cardData, index) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.dataset.pair = cardData.pairId;
+      card.dataset.type = cardData.type;
+      card.dataset.index = index;
+
+      card.innerHTML = `
+        <div class="card-inner">
+          <div class="face face-back"></div>
+          <div class="face face-front">
+            <span class="tag">${cardData.type === 'q' ? 'سؤال' : 'إجابة'}</span>
+            <span class="card-text">${cardData.text}</span>
+          </div>
+        </div>
+      `;
+      card.addEventListener('click', () => onCardClick(card));
+      board.appendChild(card);
+    });
+  }
+
+  function onCardClick(card){
+    if(locked) return;
+    if(card.classList.contains('flipped') || card.classList.contains('matched')) return;
+    if(flipped.length === 2) return;
+
+    startTimer();
+    card.classList.add('flipped');
+    flipped.push(card);
+
+    if(flipped.length === 2){
+      moves++;
+      movesEl.textContent = toArabicDigits(moves);
+      checkMatch();
+    }
+  }
+
+  function checkMatch(){
+    const [c1, c2] = flipped;
+    const isMatch = c1.dataset.pair === c2.dataset.pair;
+
+    if(isMatch){
+      locked = true;
+      setTimeout(() => {
+        c1.classList.add('matched');
+        c2.classList.add('matched');
+        c1.classList.remove('flipped');
+        c2.classList.remove('flipped');
+        flipped = [];
+        locked = false;
+        matchedCount++;
+        pairsFoundEl.textContent = toArabicDigits(matchedCount);
+        if(matchedCount === pairs.length){
+          stopTimer();
+          finalMovesEl.textContent = toArabicDigits(moves);
+          finalTimeEl.textContent = formatTime(seconds);
+          setTimeout(() => overlay.classList.add('show'), 500);
+        }
+      }, 450);
+    } else {
+      locked = true;
+      c1.classList.add('shake');
+      c2.classList.add('shake');
+      setTimeout(() => {
+        c1.classList.remove('flipped','shake');
+        c2.classList.remove('flipped','shake');
+        flipped = [];
+        locked = false;
+      }, 850);
+    }
+  }
+
+  function resetGame(){
+    flipped = [];
+    matchedCount = 0;
+    moves = 0;
+    locked = false;
+    seconds = 0;
+    stopTimer();
+    movesEl.textContent = '٠';
+    pairsFoundEl.textContent = '٠';
+    timerEl.textContent = '٠٠:٠٠';
+    overlay.classList.remove('show');
+    render();
+  }
+
+  document.getElementById('restartBtn').addEventListener('click', resetGame);
+  document.getElementById('playAgainBtn').addEventListener('click', resetGame);
+
+  render();
+</script>
+</body>
+</html>

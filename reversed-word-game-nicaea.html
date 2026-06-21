@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>لعبة الكلمة المقلوبة | مجمع نيقية المسكوني</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400;500;600;700&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0f1c33;
+    --navy-2:#1f3158;
+    --gold:#c9a227;
+    --gold-light:#ecd078;
+    --cream:#f4ead2;
+    --maroon:#7d2e2e;
+    --ink:#241b12;
+    --green:#2e7d4f;
+    --red:#b13030;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
+
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 20% 0%, rgba(201,162,39,0.12), transparent 45%),
+      radial-gradient(circle at 85% 95%, rgba(125,46,46,0.20), transparent 50%),
+      linear-gradient(160deg, var(--navy) 0%, var(--navy-2) 60%, var(--navy) 100%);
+    font-family:'Cairo', sans-serif;
+    color:var(--cream);
+    padding:18px 14px 50px;
+  }
+
+  .wrap{ max-width:430px; margin:0 auto; }
+
+  /* ---------- Header ---------- */
+  .header{ text-align:center; margin-bottom:14px; }
+  .eyebrow{
+    font-size:12px; letter-spacing:2.5px; color:var(--gold-light);
+    text-transform:uppercase; opacity:0.85; margin-bottom:4px;
+  }
+  h1{
+    font-family:'Markazi Text', serif; font-weight:700; font-size:30px;
+    background:linear-gradient(180deg, var(--gold-light), var(--gold));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    line-height:1.15;
+  }
+  .subtitle{ font-size:13px; color:#cdd7ea; margin-top:2px; font-weight:600; }
+  .flourish{ width:170px; height:20px; margin:8px auto 8px; opacity:0.9; display:block; }
+
+  .instructions{
+    font-size:12px; color:#d9e1f0; line-height:1.8;
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(201,162,39,0.25);
+    border-radius:10px; padding:9px 12px; margin-bottom:14px;
+  }
+  .instructions b{ color:var(--gold-light); }
+
+  /* ---------- Score / progress bar ---------- */
+  .status-bar{
+    display:flex; align-items:center; gap:10px; margin-bottom:8px;
+  }
+  .score-pill{
+    background:rgba(255,255,255,0.06);
+    border:1.5px solid rgba(201,162,39,0.45);
+    border-radius:999px;
+    padding:8px 16px;
+    display:flex; align-items:center; gap:6px;
+    white-space:nowrap;
+  }
+  .score-pill .label{ font-size:12px; font-weight:700; color:#cdd7ea; }
+  .score-pill .num{ font-family:'Markazi Text', serif; font-weight:700; font-size:20px; color:var(--gold-light); }
+
+  .progress-track{
+    flex:1;
+    height:8px;
+    background:rgba(255,255,255,0.08);
+    border-radius:999px;
+    overflow:hidden;
+    border:1px solid rgba(201,162,39,0.25);
+  }
+  .progress-fill{
+    height:100%;
+    background:linear-gradient(90deg, var(--gold), var(--gold-light));
+    width:0%;
+    transition:width .5s ease;
+  }
+  .progress-label{ font-size:11px; color:#9fb0cc; text-align:left; margin-bottom:16px; }
+
+  .reset-row{ display:flex; justify-content:center; margin-bottom:14px; }
+  .btn-reset{
+    background:transparent;
+    border:1px solid rgba(201,162,39,0.4);
+    color:#cdd7ea;
+    border-radius:999px;
+    padding:6px 16px;
+    font-family:'Cairo', sans-serif;
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .btn-reset:active{ background:rgba(255,255,255,0.06); }
+
+  /* ---------- Stage ---------- */
+  .stage{ perspective:1200px; margin-bottom:8px; }
+
+  .stage-card{
+    position:relative;
+    min-height:300px;
+    border-radius:20px;
+  }
+
+  .stage-inner{
+    position:relative;
+    width:100%;
+    transition:transform .6s cubic-bezier(.4,.2,.2,1);
+    transform-style:preserve-3d;
+  }
+  .stage-card.flipped .stage-inner{ transform:rotateY(180deg); }
+
+  .stage-face{
+    backface-visibility:hidden;
+    border-radius:20px;
+    padding:20px;
+  }
+
+  /* mystery (back) face */
+  .stage-back{
+    position:relative;
+    min-height:300px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:16px;
+    background:
+      radial-gradient(circle, rgba(201,162,39,0.18) 0%, transparent 62%),
+      linear-gradient(150deg, var(--navy-2), var(--navy));
+    border:1.5px solid rgba(201,162,39,0.55);
+    box-shadow:inset 0 0 0 4px rgba(201,162,39,0.08), 0 6px 18px rgba(0,0,0,0.35);
+    text-align:center;
+  }
+  .stage-back .cross{
+    font-size:54px; color:var(--gold-light);
+    text-shadow:0 0 16px rgba(236,208,120,0.55);
+    opacity:0.9;
+  }
+  .stage-back .round-label{
+    font-size:13px; color:#cdd7ea; font-weight:700;
+  }
+  .btn-flip{
+    background:linear-gradient(180deg, var(--gold-light), var(--gold));
+    color:var(--ink);
+    border:none;
+    border-radius:999px;
+    padding:13px 30px;
+    font-family:'Cairo', sans-serif;
+    font-weight:800;
+    font-size:15px;
+    cursor:pointer;
+    box-shadow:0 4px 14px rgba(201,162,39,0.35);
+  }
+  .btn-flip:active{ transform:scale(0.97); }
+
+  /* front face (revealed word) */
+  .stage-front{
+    position:absolute; inset:0;
+    transform:rotateY(180deg);
+    min-height:300px;
+    display:flex; flex-direction:column; justify-content:center;
+    background:var(--cream);
+    color:var(--ink);
+    border:1.5px solid var(--gold);
+    box-shadow:inset 0 0 0 3px rgba(255,255,255,0.5), 0 6px 18px rgba(0,0,0,0.3);
+  }
+
+  .timer-tag{
+    position:absolute; top:12px; left:14px;
+    font-size:11.5px; font-weight:800; color:var(--maroon);
+    background:rgba(125,46,46,0.08);
+    border:1px solid rgba(125,46,46,0.3);
+    border-radius:999px; padding:3px 10px;
+  }
+
+  .reversed-word{
+    text-align:center;
+    font-family:'Markazi Text', serif;
+    font-weight:700;
+    font-size:38px;
+    color:var(--ink);
+    letter-spacing:1px;
+    margin:6px 0 16px;
+  }
+
+  .input-row{ display:flex; gap:8px; margin-bottom:8px; }
+  .guess-input{
+    flex:1;
+    background:#fff;
+    color:var(--ink);
+    border:1.5px solid rgba(125,46,46,0.4);
+    border-radius:10px;
+    padding:11px 12px;
+    font-family:'Cairo', sans-serif;
+    font-size:16px;
+    font-weight:600;
+    text-align:center;
+    outline:none;
+  }
+  .guess-input.correct{ border-color:var(--green); box-shadow:0 0 0 2px rgba(46,125,79,0.3); }
+  .guess-input.wrong{ border-color:var(--red); box-shadow:0 0 0 2px rgba(177,48,48,0.3); animation:shake .4s; }
+  .guess-input:disabled{ opacity:0.85; }
+
+  @keyframes shake{
+    0%,100%{ transform:translateX(0); }
+    25%{ transform:translateX(-5px); }
+    75%{ transform:translateX(5px); }
+  }
+
+  .btn-check{
+    background:var(--maroon);
+    color:var(--cream);
+    border:none;
+    border-radius:10px;
+    padding:0 16px;
+    font-family:'Cairo', sans-serif;
+    font-weight:800;
+    font-size:13.5px;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .btn-check:disabled{ opacity:0.5; }
+  .btn-check:active{ transform:scale(0.97); }
+
+  .feedback{
+    font-size:13.5px; font-weight:700; text-align:center; min-height:18px; margin-bottom:6px;
+  }
+  .feedback.ok{ color:var(--green); }
+  .feedback.bad{ color:var(--red); }
+
+  .btn-reveal{
+    width:100%;
+    background:transparent;
+    border:1.5px dashed rgba(125,46,46,0.5);
+    color:var(--maroon);
+    border-radius:10px;
+    padding:9px 10px;
+    font-family:'Cairo', sans-serif;
+    font-weight:700;
+    font-size:12.5px;
+    cursor:pointer;
+    margin-top:2px;
+  }
+  .btn-reveal:active{ background:rgba(125,46,46,0.08); }
+  .btn-reveal:disabled{ opacity:0.4; }
+
+  .answer-line{
+    text-align:center;
+    font-family:'Markazi Text', serif;
+    font-weight:700;
+    font-size:20px;
+    color:var(--maroon);
+    margin-top:10px;
+    display:none;
+  }
+  .answer-line.show{ display:block; }
+
+  .btn-next{
+    display:none;
+    width:100%;
+    margin-top:14px;
+    background:linear-gradient(180deg, var(--navy-2), var(--navy));
+    color:var(--gold-light);
+    border:1.5px solid var(--gold);
+    border-radius:12px;
+    padding:13px;
+    font-family:'Cairo', sans-serif;
+    font-weight:800;
+    font-size:14.5px;
+    cursor:pointer;
+  }
+  .btn-next.show{ display:block; }
+  .btn-next:active{ transform:scale(0.98); }
+
+  /* ---------- End screen ---------- */
+  .end-screen{
+    display:none;
+    text-align:center;
+    background:linear-gradient(160deg, var(--navy-2), var(--navy));
+    border:1.5px solid var(--gold);
+    border-radius:20px;
+    padding:34px 22px;
+    box-shadow:0 0 40px rgba(201,162,39,0.3);
+  }
+  .end-screen.show{ display:block; }
+  .end-screen .trophy{ font-size:46px; margin-bottom:10px; }
+  .end-screen h2{ font-family:'Markazi Text', serif; font-size:28px; color:var(--gold-light); margin-bottom:10px; }
+  .end-screen .final-score{
+    font-family:'Markazi Text', serif; font-size:44px; font-weight:700; color:var(--gold-light);
+    margin-bottom:4px;
+  }
+  .end-screen .final-score-label{ font-size:13px; color:#cdd7ea; margin-bottom:6px; }
+  .end-screen .final-time{ font-size:13px; color:#9fb0cc; margin-bottom:20px; }
+  .btn-replay{
+    background:linear-gradient(180deg, var(--gold-light), var(--gold));
+    color:var(--ink);
+    border:none;
+    border-radius:999px;
+    padding:12px 28px;
+    font-family:'Cairo', sans-serif;
+    font-weight:800;
+    font-size:14.5px;
+    cursor:pointer;
+  }
+  .btn-replay:active{ transform:scale(0.97); }
+
+  footer{ margin-top:22px; font-size:11px; color:#8d9ab8; text-align:center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="eyebrow">مدرسة الأحد</div>
+    <h1>لعبة الكلمة المقلوبة</h1>
+    <div class="subtitle">مجمع نيقية المسكوني الأول — ٣٢٥ م</div>
+    <svg class="flourish" viewBox="0 0 220 24" xmlns="http://www.w3.org/2000/svg">
+      <line x1="0" y1="12" x2="85" y2="12" stroke="#c9a227" stroke-width="1.2" opacity="0.7"/>
+      <text x="110" y="18" font-size="16" text-anchor="middle" fill="#ecd078">☦</text>
+      <line x1="135" y1="12" x2="220" y2="12" stroke="#c9a227" stroke-width="1.2" opacity="0.7"/>
+    </svg>
+    <div class="instructions">
+      اضغطي على البطاقة الغامضة لكشف كلمة مقلوبة، واكتبي الكلمة الأصلية بأسرع وقت.
+      <b>كل إجابة صحيحة = نقطة.</b> لو محتارة، اضغطي "إظهار الإجابة".
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <div class="score-pill">
+      <span class="label">🏆 النقاط</span>
+      <span class="num" id="scoreNum">٠</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+  <div class="progress-label" id="progressLabel">الكلمة ١ من ١٠</div>
+
+  <div class="reset-row">
+    <button class="btn-reset" id="resetBtn">↺ إعادة ضبط اللعبة بالكامل</button>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="stage-card" id="stageCard">
+      <div class="stage-inner" id="stageInner">
+        <div class="stage-face stage-back" id="stageBack">
+          <div class="cross">☦</div>
+          <div class="round-label" id="roundLabel">الكلمة رقم ١</div>
+          <button class="btn-flip" id="flipBtn">🔮 اكشفي الكلمة</button>
+        </div>
+        <div class="stage-face stage-front" id="stageFront">
+          <span class="timer-tag" id="timerTag">⏱ ٠٠:٠٠</span>
+          <div class="reversed-word" id="reversedWord"></div>
+          <div class="input-row">
+            <input type="text" class="guess-input" id="guessInput" placeholder="اكتبي الإجابة هنا" />
+            <button class="btn-check" id="checkBtn">تحقق</button>
+          </div>
+          <div class="feedback" id="feedback"></div>
+          <button class="btn-reveal" id="revealBtn">👁 إظهار الإجابة</button>
+          <div class="answer-line" id="answerLine"></div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-next" id="nextBtn">الكلمة التالية ←</button>
+  </div>
+
+  <div class="end-screen" id="endScreen">
+    <div class="trophy">🏆</div>
+    <h2>خلصتي كل الكلمات!</h2>
+    <div class="final-score" id="finalScore">٠</div>
+    <div class="final-score-label">من ١٠ نقاط</div>
+    <div class="final-time" id="finalTime"></div>
+    <button class="btn-replay" id="replayBtn">العب تاني 🔄</button>
+  </div>
+
+  <footer>اضغطي على البطاقة لبدء كل جولة — كل كلمة بتتكشف لوحدها</footer>
+
+</div>
+
+<script>
+  const baseWords = [
+    { rev: "ةيقين",        ans: "نيقية" },
+    { rev: "عمجم",         ans: "مجمع" },
+    { rev: "سويرآ",        ans: "آريوس" },
+    { rev: "سويسانثأ",     ans: "أثناسيوس" },
+    { rev: "ناميإ",        ans: "إيمان" },
+    { rev: "حيسملا",       ans: "المسيح" },
+    { rev: "ةسينكلا",      ans: "الكنيسة" },
+    { rev: "فقسأ",         ans: "أسقف" },
+    { rev: "روطاربملإا",   ans: "الإمبراطور" },
+    { rev: "نيطنطسق",      ans: "قسطنطين" },
+  ];
+
+  const scoreNumEl = document.getElementById('scoreNum');
+  const progressFillEl = document.getElementById('progressFill');
+  const progressLabelEl = document.getElementById('progressLabel');
+  const stageCard = document.getElementById('stageCard');
+  const roundLabel = document.getElementById('roundLabel');
+  const flipBtn = document.getElementById('flipBtn');
+  const reversedWordEl = document.getElementById('reversedWord');
+  const guessInput = document.getElementById('guessInput');
+  const checkBtn = document.getElementById('checkBtn');
+  const feedback = document.getElementById('feedback');
+  const revealBtn = document.getElementById('revealBtn');
+  const answerLine = document.getElementById('answerLine');
+  const nextBtn = document.getElementById('nextBtn');
+  const timerTag = document.getElementById('timerTag');
+  const stage = document.getElementById('stage');
+  const endScreen = document.getElementById('endScreen');
+  const finalScoreEl = document.getElementById('finalScore');
+  const finalTimeEl = document.getElementById('finalTime');
+  const replayBtn = document.getElementById('replayBtn');
+  const resetBtn = document.getElementById('resetBtn');
+
+  let words = [];
+  let currentIndex = 0;
+  let score = 0;
+  let roundLocked = false;
+  let roundStart = null;
+  let roundInterval = null;
+  let totalElapsed = 0;
+
+  function toArabicDigits(n){
+    const map = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+    return String(n).split('').map(d => map[d] !== undefined ? map[d] : d).join('');
+  }
+
+  function formatTime(s){
+    const m = Math.floor(s/60).toString().padStart(2,'0');
+    const sec = (s%60).toString().padStart(2,'0');
+    return toArabicDigits(m) + ':' + toArabicDigits(sec);
+  }
+
+  function normalize(str){
+    return str
+      .trim()
+      .replace(/[\u064B-\u0652\u0670\u0640]/g, '')
+      .replace(/[إأآا]/g, 'ا')
+      .replace(/\s+/g, '');
+  }
+
+  function isMatch(input, answer){
+    const a = normalize(input);
+    const b = normalize(answer);
+    if(a === b) return true;
+    const stripAl = s => s.replace(/^ال/, '');
+    return stripAl(a) === stripAl(b);
+  }
+
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i = a.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i+1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function startGame(){
+    words = shuffle(baseWords);
+    currentIndex = 0;
+    score = 0;
+    totalElapsed = 0;
+    scoreNumEl.textContent = '٠';
+    endScreen.classList.remove('show');
+    stage.style.display = '';
+    loadRound();
+  }
+
+  function updateProgress(){
+    const pct = (currentIndex / words.length) * 100;
+    progressFillEl.style.width = pct + '%';
+    progressLabelEl.textContent = 'الكلمة ' + toArabicDigits(currentIndex + 1) + ' من ' + toArabicDigits(words.length);
+  }
+
+  function loadRound(){
+    if(currentIndex >= words.length){
+      finishGame();
+      return;
+    }
+    roundLocked = false;
+    stageCard.classList.remove('flipped');
+    roundLabel.textContent = 'الكلمة رقم ' + toArabicDigits(currentIndex + 1);
+    const w = words[currentIndex];
+    reversedWordEl.textContent = w.rev;
+    guessInput.value = '';
+    guessInput.disabled = false;
+    guessInput.classList.remove('correct','wrong');
+    checkBtn.disabled = false;
+    feedback.textContent = '';
+    feedback.className = 'feedback';
+    answerLine.classList.remove('show');
+    answerLine.textContent = '';
+    revealBtn.disabled = false;
+    revealBtn.textContent = '👁 إظهار الإجابة';
+    nextBtn.classList.remove('show');
+    timerTag.textContent = '⏱ ٠٠:٠٠';
+    updateProgress();
+    clearInterval(roundInterval);
+  }
+
+  flipBtn.addEventListener('click', () => {
+    stageCard.classList.add('flipped');
+    roundStart = Date.now();
+    roundInterval = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - roundStart) / 1000);
+      timerTag.textContent = '⏱ ' + formatTime(elapsed);
+    }, 1000);
+    setTimeout(() => guessInput.focus(), 350);
+  });
+
+  function lockRound(wasCorrect){
+    if(roundLocked) return;
+    roundLocked = true;
+    clearInterval(roundInterval);
+    const elapsed = roundStart ? Math.floor((Date.now() - roundStart) / 1000) : 0;
+    totalElapsed += elapsed;
+    guessInput.disabled = true;
+    checkBtn.disabled = true;
+    revealBtn.disabled = true;
+    answerLine.textContent = 'الإجابة الصحيحة: ' + words[currentIndex].ans;
+    answerLine.classList.add('show');
+    nextBtn.classList.add('show');
+    if(wasCorrect){
+      score++;
+      scoreNumEl.textContent = toArabicDigits(score);
+    }
+  }
+
+  function doCheck(){
+    if(roundLocked) return;
+    const val = guessInput.value.trim();
+    if(!val) return;
+    if(isMatch(val, words[currentIndex].ans)){
+      guessInput.classList.remove('wrong');
+      guessInput.classList.add('correct');
+      feedback.textContent = '✅ إجابة صحيحة!';
+      feedback.className = 'feedback ok';
+      lockRound(true);
+    } else {
+      guessInput.classList.remove('correct');
+      guessInput.classList.add('wrong');
+      feedback.textContent = '❌ مش صح، حاولي تاني';
+      feedback.className = 'feedback bad';
+      setTimeout(() => guessInput.classList.remove('wrong'), 450);
+    }
+  }
+
+  checkBtn.addEventListener('click', doCheck);
+  guessInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') doCheck(); });
+
+  revealBtn.addEventListener('click', () => {
+    if(roundLocked) return;
+    feedback.textContent = '';
+    lockRound(false);
+  });
+
+  nextBtn.addEventListener('click', () => {
+    currentIndex++;
+    loadRound();
+  });
+
+  function finishGame(){
+    stage.style.display = 'none';
+    finalScoreEl.textContent = toArabicDigits(score);
+    finalTimeEl.textContent = 'الوقت الإجمالي: ' + formatTime(totalElapsed);
+    endScreen.classList.add('show');
+  }
+
+  replayBtn.addEventListener('click', startGame);
+
+  resetBtn.addEventListener('click', () => {
+    if(!confirm('هل تريدين إعادة ضبط اللعبة بالكامل؟')) return;
+    startGame();
+  });
+
+  startGame();
+</script>
+</body>
+</html>

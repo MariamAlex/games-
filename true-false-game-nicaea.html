@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>صح ولا غلط؟ | مجمع نيقية المسكوني</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400;500;600;700&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0f1c33;
+    --navy-2:#1f3158;
+    --gold:#c9a227;
+    --gold-light:#ecd078;
+    --cream:#f4ead2;
+    --maroon:#7d2e2e;
+    --ink:#241b12;
+    --green:#2e7d4f;
+    --red:#b13030;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
+
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 20% 0%, rgba(201,162,39,0.12), transparent 45%),
+      radial-gradient(circle at 85% 95%, rgba(125,46,46,0.20), transparent 50%),
+      linear-gradient(160deg, var(--navy) 0%, var(--navy-2) 60%, var(--navy) 100%);
+    font-family:'Cairo', sans-serif;
+    color:var(--cream);
+    padding:18px 14px 50px;
+  }
+
+  .wrap{ max-width:430px; margin:0 auto; }
+
+  /* ---------- Header ---------- */
+  .header{ text-align:center; margin-bottom:14px; }
+  .eyebrow{
+    font-size:12px; letter-spacing:2.5px; color:var(--gold-light);
+    text-transform:uppercase; opacity:0.85; margin-bottom:4px;
+  }
+  h1{
+    font-family:'Markazi Text', serif; font-weight:700; font-size:32px;
+    background:linear-gradient(180deg, var(--gold-light), var(--gold));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    line-height:1.15;
+  }
+  .subtitle{ font-size:13px; color:#cdd7ea; margin-top:2px; font-weight:600; }
+  .flourish{ width:170px; height:20px; margin:8px auto 8px; opacity:0.9; display:block; }
+
+  .instructions{
+    font-size:12.5px; color:#d9e1f0; line-height:1.85;
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(201,162,39,0.25);
+    border-radius:10px; padding:10px 13px; margin-bottom:14px;
+  }
+  .instructions b{ color:var(--gold-light); }
+
+  /* ---------- Score / progress bar ---------- */
+  .status-bar{ display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+  .score-pill{
+    background:rgba(255,255,255,0.06);
+    border:1.5px solid rgba(201,162,39,0.45);
+    border-radius:999px;
+    padding:8px 16px;
+    display:flex; align-items:center; gap:6px;
+    white-space:nowrap;
+  }
+  .score-pill .label{ font-size:12px; font-weight:700; color:#cdd7ea; }
+  .score-pill .num{ font-family:'Markazi Text', serif; font-weight:700; font-size:20px; color:var(--gold-light); }
+
+  .progress-track{
+    flex:1; height:8px;
+    background:rgba(255,255,255,0.08);
+    border-radius:999px; overflow:hidden;
+    border:1px solid rgba(201,162,39,0.25);
+  }
+  .progress-fill{
+    height:100%;
+    background:linear-gradient(90deg, var(--gold), var(--gold-light));
+    width:0%; transition:width .5s ease;
+  }
+  .progress-label{ font-size:11px; color:#9fb0cc; text-align:left; margin-bottom:16px; }
+
+  .reset-row{ display:flex; justify-content:center; margin-bottom:14px; }
+  .btn-reset{
+    background:transparent;
+    border:1px solid rgba(201,162,39,0.4);
+    color:#cdd7ea;
+    border-radius:999px;
+    padding:6px 16px;
+    font-family:'Cairo', sans-serif;
+    font-size:12px; font-weight:700; cursor:pointer;
+  }
+  .btn-reset:active{ background:rgba(255,255,255,0.06); }
+
+  /* ---------- Question card ---------- */
+  .q-card{
+    background:linear-gradient(160deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+    border:1.5px solid rgba(201,162,39,0.35);
+    border-radius:18px;
+    padding:20px 18px;
+    opacity:0;
+    transform:translateY(10px);
+    transition:opacity .35s ease, transform .35s ease;
+  }
+  .q-card.in{ opacity:1; transform:translateY(0); }
+
+  .q-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+  .index-badge{
+    width:26px; height:26px; border-radius:50%;
+    background:rgba(201,162,39,0.18);
+    border:1px solid rgba(201,162,39,0.5);
+    color:var(--gold-light);
+    font-size:12px; font-weight:800;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .type-tag{
+    font-size:10.5px; font-weight:800; letter-spacing:0.5px;
+    padding:4px 12px; border-radius:999px;
+  }
+  .type-tag.tf{ background:rgba(125,46,46,0.25); color:#f0c9c9; border:1px solid rgba(125,46,46,0.5); }
+  .type-tag.extra{ background:rgba(201,162,39,0.22); color:var(--gold-light); border:1px solid rgba(201,162,39,0.5); }
+  .type-tag.think{ background:rgba(31,49,88,0.5); color:#bcd0f0; border:1px solid rgba(120,150,200,0.5); }
+
+  .q-text{
+    font-family:'Markazi Text', serif;
+    font-weight:600;
+    font-size:22px;
+    line-height:1.5;
+    color:var(--cream);
+    margin-bottom:18px;
+    text-align:center;
+  }
+
+  /* TF buttons */
+  .tf-row{ display:flex; gap:10px; margin-bottom:6px; }
+  .btn-tf{
+    flex:1;
+    padding:16px 8px;
+    border-radius:14px;
+    font-family:'Cairo', sans-serif;
+    font-weight:800;
+    font-size:16px;
+    cursor:pointer;
+    border:1.5px solid rgba(255,255,255,0.15);
+    background:rgba(255,255,255,0.04);
+    color:var(--cream);
+    transition:transform .12s ease;
+  }
+  .btn-tf.true{ border-color:rgba(46,125,79,0.5); }
+  .btn-tf.false{ border-color:rgba(177,48,48,0.5); }
+  .btn-tf:active{ transform:scale(0.96); }
+  .btn-tf:disabled{ cursor:default; }
+  .btn-tf.correct-pick{ background:rgba(46,125,79,0.35); border-color:var(--green); box-shadow:0 0 14px rgba(46,125,79,0.4); }
+  .btn-tf.wrong-pick{ background:rgba(177,48,48,0.3); border-color:var(--red); box-shadow:0 0 14px rgba(177,48,48,0.35); }
+  .btn-tf.reveal-correct{ background:rgba(46,125,79,0.22); border-color:var(--green); }
+  .btn-tf.dim{ opacity:0.45; }
+
+  /* MC buttons */
+  .mc-col{ display:flex; flex-direction:column; gap:10px; margin-bottom:6px; }
+  .btn-mc{
+    text-align:right;
+    padding:13px 14px;
+    border-radius:12px;
+    font-family:'Cairo', sans-serif;
+    font-weight:700;
+    font-size:14.5px;
+    cursor:pointer;
+    border:1.5px solid rgba(255,255,255,0.15);
+    background:rgba(255,255,255,0.04);
+    color:var(--cream);
+    line-height:1.5;
+  }
+  .btn-mc:active{ transform:scale(0.98); }
+  .btn-mc:disabled{ cursor:default; }
+  .btn-mc.correct-pick{ background:rgba(46,125,79,0.35); border-color:var(--green); box-shadow:0 0 14px rgba(46,125,79,0.4); }
+  .btn-mc.wrong-pick{ background:rgba(177,48,48,0.3); border-color:var(--red); box-shadow:0 0 14px rgba(177,48,48,0.35); }
+  .btn-mc.reveal-correct{ background:rgba(46,125,79,0.22); border-color:var(--green); }
+  .btn-mc.dim{ opacity:0.45; }
+
+  /* Feedback / explanation */
+  .feedback-box{
+    display:none;
+    margin-top:8px;
+    border-radius:12px;
+    padding:12px 14px;
+    font-size:13.5px;
+    line-height:1.85;
+  }
+  .feedback-box.show{ display:block; }
+  .feedback-box.ok{ background:rgba(46,125,79,0.15); border:1px solid rgba(46,125,79,0.4); color:#bdeccf; }
+  .feedback-box.bad{ background:rgba(177,48,48,0.13); border:1px solid rgba(177,48,48,0.4); color:#f3c7c7; }
+  .feedback-box .head{ font-weight:800; margin-bottom:4px; display:block; }
+  .feedback-box .explain{ color:#e7eefb; }
+
+  .btn-next{
+    display:none;
+    width:100%;
+    margin-top:16px;
+    background:linear-gradient(180deg, var(--gold-light), var(--gold));
+    color:var(--ink);
+    border:none;
+    border-radius:12px;
+    padding:13px;
+    font-family:'Cairo', sans-serif;
+    font-weight:800;
+    font-size:14.5px;
+    cursor:pointer;
+  }
+  .btn-next.show{ display:block; }
+  .btn-next:active{ transform:scale(0.98); }
+
+  /* ---------- End screen ---------- */
+  .end-screen{
+    display:none;
+    text-align:center;
+    background:linear-gradient(160deg, var(--navy-2), var(--navy));
+    border:1.5px solid var(--gold);
+    border-radius:20px;
+    padding:34px 22px;
+    box-shadow:0 0 40px rgba(201,162,39,0.3);
+  }
+  .end-screen.show{ display:block; }
+  .end-screen .trophy{ font-size:46px; margin-bottom:10px; }
+  .end-screen h2{ font-family:'Markazi Text', serif; font-size:26px; color:var(--gold-light); margin-bottom:10px; }
+  .end-screen .final-score{
+    font-family:'Markazi Text', serif; font-size:44px; font-weight:700; color:var(--gold-light);
+    margin-bottom:4px;
+  }
+  .end-screen .final-score-label{ font-size:13px; color:#cdd7ea; margin-bottom:10px; }
+  .end-screen .verdict{ font-size:13.5px; color:#d9e1f0; margin-bottom:22px; line-height:1.8; }
+  .btn-replay{
+    background:linear-gradient(180deg, var(--gold-light), var(--gold));
+    color:var(--ink);
+    border:none;
+    border-radius:999px;
+    padding:12px 28px;
+    font-family:'Cairo', sans-serif;
+    font-weight:800;
+    font-size:14.5px;
+    cursor:pointer;
+  }
+  .btn-replay:active{ transform:scale(0.97); }
+
+  footer{ margin-top:22px; font-size:11px; color:#8d9ab8; text-align:center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="eyebrow">مدرسة الأحد</div>
+    <h1>صح ولا غلط؟</h1>
+    <div class="subtitle">مجمع نيقية المسكوني الأول — ٣٢٥ م</div>
+    <svg class="flourish" viewBox="0 0 220 24" xmlns="http://www.w3.org/2000/svg">
+      <line x1="0" y1="12" x2="85" y2="12" stroke="#c9a227" stroke-width="1.2" opacity="0.7"/>
+      <text x="110" y="18" font-size="16" text-anchor="middle" fill="#ecd078">☦</text>
+      <line x1="135" y1="12" x2="220" y2="12" stroke="#c9a227" stroke-width="1.2" opacity="0.7"/>
+    </svg>
+    <div class="instructions">
+      اقرئي كل جملة وفكري هل هي <b>✅ صح</b> ولا <b>❌ غلط</b>. بعد ما تختاري، هتقري التوضيح علشان تعرفي الإجابة الصحيحة.
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <div class="score-pill">
+      <span class="label">🏆 النقاط</span>
+      <span class="num" id="scoreNum">٠</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+  <div class="progress-label" id="progressLabel">السؤال ١ من ١٠</div>
+
+  <div class="reset-row">
+    <button class="btn-reset" id="resetBtn">↺ إعادة ضبط اللعبة بالكامل</button>
+  </div>
+
+  <div id="qCard" class="q-card">
+    <div class="q-top">
+      <span class="index-badge" id="indexBadge">١</span>
+      <span class="type-tag" id="typeTag"></span>
+    </div>
+    <div class="q-text" id="qText"></div>
+    <div id="answerArea"></div>
+    <div class="feedback-box" id="feedbackBox">
+      <span class="head" id="feedbackHead"></span>
+      <span class="explain" id="feedbackExplain"></span>
+    </div>
+    <button class="btn-next" id="nextBtn">السؤال التالي ←</button>
+  </div>
+
+  <div class="end-screen" id="endScreen">
+    <div class="trophy">🏆</div>
+    <h2>خلصتي كل الأسئلة!</h2>
+    <div class="final-score" id="finalScore">٠</div>
+    <div class="final-score-label">من ١٠ نقاط</div>
+    <div class="verdict" id="verdict"></div>
+    <button class="btn-replay" id="replayBtn">العب تاني 🔄</button>
+  </div>
+
+  <footer>اقرئي كل جملة بتمعن قبل ما تختاري إجابتك</footer>
+
+</div>
+
+<script>
+  const tfBase = [
+    { text: "مجمع نيقية اتعمل سنة ٣٢٥م.", correct: true },
+    { text: "الإمبراطور اللي دعا لمجمع نيقية هو ثيودوسيوس.", correct: false, explain: "الإجابة الصحيحة: قسطنطين الكبير." },
+    { text: "مجمع نيقية اتعمل في مدينة روما.", correct: false, explain: "الإجابة الصحيحة: مدينة نيقية." },
+    { text: "سبب المجمع الأساسي كان حل خلاف بين البابا وأسقف روما.", correct: false, explain: "الإجابة الصحيحة: كان بسبب تعليم أريوس عن السيد المسيح." },
+    { text: "أريوس كان بيقول إن السيد المسيح مخلوق وليس أزليًا.", correct: true },
+    { text: "المجمع أكد أن السيد المسيح إله حق من إله حق.", correct: true },
+    { text: "عدد قوانين المجمع كان ٢٠ قانونًا.", correct: true },
+    { text: "قانون الإيمان اللي بنقوله في الكنيسة بدأ في مجمع نيقية ثم اكتمل بعد ذلك.", correct: true },
+  ];
+
+  const mcQuestions = [
+    {
+      type: 'extra',
+      tagLabel: 'سؤال إضافي',
+      text: "مين اللي كسب في مجمع نيقية؟",
+      options: ["أ) أريوس", "ب) الآباء المجتمعون", "ج) الإمبراطور قسطنطين"],
+      correctIndex: 1,
+      explain: "لأنهم دافعوا عن الإيمان المستقيم ورفضوا تعليم أريوس."
+    },
+    {
+      type: 'think',
+      tagLabel: 'سؤال للتفكير',
+      text: "لو كنتِ موجودة في مجمع نيقية، أي جملة كنتِ هتوافقي عليها؟",
+      options: ["أ) المسيح مخلوق.", "ب) المسيح إنسان عادي.", "ج) المسيح إله حق من إله حق، مولود غير مخلوق."],
+      correctIndex: 2,
+      explain: "دي هي الجملة اللي أكدها مجمع نيقية في تعريف الإيمان السليم."
+    }
+  ];
+
+  const scoreNumEl = document.getElementById('scoreNum');
+  const progressFillEl = document.getElementById('progressFill');
+  const progressLabelEl = document.getElementById('progressLabel');
+  const qCard = document.getElementById('qCard');
+  const indexBadge = document.getElementById('indexBadge');
+  const typeTag = document.getElementById('typeTag');
+  const qText = document.getElementById('qText');
+  const answerArea = document.getElementById('answerArea');
+  const feedbackBox = document.getElementById('feedbackBox');
+  const feedbackHead = document.getElementById('feedbackHead');
+  const feedbackExplain = document.getElementById('feedbackExplain');
+  const nextBtn = document.getElementById('nextBtn');
+  const endScreen = document.getElementById('endScreen');
+  const finalScoreEl = document.getElementById('finalScore');
+  const verdictEl = document.getElementById('verdict');
+  const replayBtn = document.getElementById('replayBtn');
+  const resetBtn = document.getElementById('resetBtn');
+
+  let questions = [];
+  let currentIndex = 0;
+  let score = 0;
+  let answered = false;
+
+  function toArabicDigits(n){
+    const map = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+    return String(n).split('').map(d => map[d] !== undefined ? map[d] : d).join('');
+  }
+
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i = a.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i+1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function buildQuestions(){
+    const tf = shuffle(tfBase).map(q => ({ type: 'tf', tagLabel: 'صح ولا غلط', text: q.text, correct: q.correct, explain: q.explain || null }));
+    return [...tf, ...mcQuestions];
+  }
+
+  function startGame(){
+    questions = buildQuestions();
+    currentIndex = 0;
+    score = 0;
+    scoreNumEl.textContent = '٠';
+    endScreen.classList.remove('show');
+    qCard.style.display = '';
+    loadQuestion();
+  }
+
+  function updateProgress(){
+    const pct = (currentIndex / questions.length) * 100;
+    progressFillEl.style.width = pct + '%';
+    progressLabelEl.textContent = 'السؤال ' + toArabicDigits(currentIndex + 1) + ' من ' + toArabicDigits(questions.length);
+  }
+
+  function loadQuestion(){
+    if(currentIndex >= questions.length){
+      finishGame();
+      return;
+    }
+    answered = false;
+    qCard.classList.remove('in');
+    const q = questions[currentIndex];
+
+    indexBadge.textContent = toArabicDigits(currentIndex + 1);
+    typeTag.className = 'type-tag ' + q.type;
+    typeTag.textContent = q.tagLabel;
+    qText.textContent = q.text;
+
+    feedbackBox.classList.remove('show','ok','bad');
+    feedbackHead.textContent = '';
+    feedbackExplain.textContent = '';
+    nextBtn.classList.remove('show');
+
+    answerArea.innerHTML = '';
+    if(q.type === 'tf'){
+      const row = document.createElement('div');
+      row.className = 'tf-row';
+      row.innerHTML = `
+        <button class="btn-tf true" data-val="true">✅ صح</button>
+        <button class="btn-tf false" data-val="false">❌ غلط</button>
+      `;
+      answerArea.appendChild(row);
+      row.querySelectorAll('.btn-tf').forEach(btn => {
+        btn.addEventListener('click', () => handleTfAnswer(btn, row));
+      });
+    } else {
+      const col = document.createElement('div');
+      col.className = 'mc-col';
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-mc';
+        btn.textContent = opt;
+        btn.dataset.idx = idx;
+        col.appendChild(btn);
+      });
+      answerArea.appendChild(col);
+      col.querySelectorAll('.btn-mc').forEach(btn => {
+        btn.addEventListener('click', () => handleMcAnswer(btn, col, q));
+      });
+    }
+
+    updateProgress();
+    requestAnimationFrame(() => requestAnimationFrame(() => qCard.classList.add('in')));
+  }
+
+  function lockButtons(container, selector){
+    container.querySelectorAll(selector).forEach(b => { b.disabled = true; });
+  }
+
+  function showFeedback(isCorrect, explainText){
+    feedbackBox.classList.add('show', isCorrect ? 'ok' : 'bad');
+    feedbackHead.textContent = isCorrect ? '✅ إجابة صحيحة!' : '❌ إجابة غلط.';
+    feedbackExplain.textContent = explainText || (isCorrect ? 'أحسنتِ!' : '');
+    nextBtn.classList.add('show');
+  }
+
+  function handleTfAnswer(btn, row){
+    if(answered) return;
+    answered = true;
+    const q = questions[currentIndex];
+    const pickedTrue = btn.dataset.val === 'true';
+    const isCorrect = pickedTrue === q.correct;
+
+    lockButtons(row, '.btn-tf');
+    row.querySelectorAll('.btn-tf').forEach(b => {
+      const bVal = b.dataset.val === 'true';
+      if(b === btn){
+        b.classList.add(isCorrect ? 'correct-pick' : 'wrong-pick');
+      } else if(bVal === q.correct){
+        b.classList.add('reveal-correct');
+      } else {
+        b.classList.add('dim');
+      }
+    });
+
+    if(isCorrect) score++;
+    scoreNumEl.textContent = toArabicDigits(score);
+
+    const explain = q.correct
+      ? (q.explain || 'الجملة دي صحيحة فعلاً.')
+      : (q.explain || '');
+    showFeedback(isCorrect, explain);
+  }
+
+  function handleMcAnswer(btn, col, q){
+    if(answered) return;
+    answered = true;
+    const picked = parseInt(btn.dataset.idx, 10);
+    const isCorrect = picked === q.correctIndex;
+
+    lockButtons(col, '.btn-mc');
+    col.querySelectorAll('.btn-mc').forEach(b => {
+      const idx = parseInt(b.dataset.idx, 10);
+      if(b === btn){
+        b.classList.add(isCorrect ? 'correct-pick' : 'wrong-pick');
+      } else if(idx === q.correctIndex){
+        b.classList.add('reveal-correct');
+      } else {
+        b.classList.add('dim');
+      }
+    });
+
+    if(isCorrect) score++;
+    scoreNumEl.textContent = toArabicDigits(score);
+
+    const explainText = 'الإجابة الصحيحة: ' + q.options[q.correctIndex] + (q.explain ? ' — ' + q.explain : '');
+    showFeedback(isCorrect, explainText);
+  }
+
+  nextBtn.addEventListener('click', () => {
+    currentIndex++;
+    loadQuestion();
+  });
+
+  function finishGame(){
+    qCard.style.display = 'none';
+    finalScoreEl.textContent = toArabicDigits(score);
+    let verdict = '';
+    if(score === questions.length) verdict = 'ممتازة! إجابات كلها صح، فاهمة درس مجمع نيقية كويس جدًا 🌟';
+    else if(score >= questions.length - 2) verdict = 'جميل جدًا! فاهمة معظم تفاصيل الدرس.';
+    else if(score >= questions.length / 2) verdict = 'مش بطال، بس يفضل تراجعي الدرس تاني علشان تتقني التفاصيل.';
+    else verdict = 'يفضل تسمعي الدرس تاني مع المعلم/ة علشان الموضوع يبقى أوضح.';
+    verdictEl.textContent = verdict;
+    endScreen.classList.add('show');
+  }
+
+  replayBtn.addEventListener('click', startGame);
+
+  resetBtn.addEventListener('click', () => {
+    if(!confirm('هل تريدين إعادة ضبط اللعبة بالكامل؟')) return;
+    startGame();
+  });
+
+  startGame();
+</script>
+</body>
+</html>

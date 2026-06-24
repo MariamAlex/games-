@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>افتكر أكبر عدد من الصور</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;600;700;800&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#241b4e;
+    --bg2:#5b3aa0;
+    --red:#e8434a;
+    --yellow:#ffc93c;
+    --blue:#3aa0e8;
+    --green:#4caf6e;
+    --cream:#fff8ec;
+    --ink:#2a2140;
+  }
+  *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(255,201,60,0.18), transparent 40%),
+      radial-gradient(circle at 90% 85%, rgba(58,160,232,0.20), transparent 45%),
+      linear-gradient(160deg, var(--bg1), var(--bg2));
+    font-family:'Cairo', sans-serif;
+    color:var(--cream);
+    padding:18px 14px 50px;
+  }
+  .wrap{ max-width:430px; margin:0 auto; }
+
+  .header{ text-align:center; margin-bottom:14px; }
+  .eyebrow{ font-size:12px; letter-spacing:2.5px; color:var(--yellow); text-transform:uppercase; opacity:0.9; margin-bottom:4px; }
+  h1{
+    font-family:'Baloo Bhaijaan 2', sans-serif; font-weight:800; font-size:30px;
+    color:#fff; text-shadow:0 3px 0 rgba(0,0,0,0.15);
+  }
+  .subtitle{ font-size:13px; color:#dcd4f5; margin-top:4px; font-weight:600; }
+
+  .screen{ display:none; }
+  .screen.show{ display:block; }
+
+  .panel{
+    background:var(--cream);
+    color:var(--ink);
+    border-radius:22px;
+    padding:22px 18px;
+    box-shadow:0 10px 28px rgba(0,0,0,0.25);
+  }
+
+  /* ---------- Start screen ---------- */
+  .rules{ font-size:13.5px; line-height:1.95; margin-bottom:16px; }
+  .rules b{ color:var(--red); }
+  .rules .point{ display:flex; gap:8px; margin-bottom:6px; align-items:flex-start; }
+  .rules .point .dot{ flex-shrink:0; }
+
+  .time-label{ font-size:13px; font-weight:800; margin-bottom:8px; text-align:center; color:var(--ink); }
+  .time-row{ display:flex; gap:8px; margin-bottom:18px; }
+  .btn-time{
+    flex:1; padding:10px 4px; border-radius:12px; border:2px solid #e5dcc8;
+    background:#fff; font-family:'Cairo'; font-weight:800; font-size:14px; color:var(--ink); cursor:pointer;
+  }
+  .btn-time.active{ background:var(--yellow); border-color:#e0ad1f; }
+
+  .btn-big{
+    width:100%;
+    background:linear-gradient(180deg, var(--red), #c92f36);
+    color:#fff;
+    border:none;
+    border-radius:14px;
+    padding:15px;
+    font-family:'Baloo Bhaijaan 2', sans-serif;
+    font-weight:700;
+    font-size:18px;
+    cursor:pointer;
+    box-shadow:0 6px 0 #a32127;
+  }
+  .btn-big:active{ transform:translateY(3px); box-shadow:0 3px 0 #a32127; }
+
+  /* ---------- Memorize screen ---------- */
+  .countdown-wrap{ display:flex; flex-direction:column; align-items:center; margin-bottom:14px; }
+  .ring-box{ position:relative; width:90px; height:90px; margin-bottom:6px; }
+  .ring-box svg{ width:100%; height:100%; transform:rotate(-90deg); }
+  .ring-bg{ fill:none; stroke:#eee2cc; stroke-width:8; }
+  .ring-fg{ fill:none; stroke:var(--red); stroke-width:8; stroke-linecap:round; transition:stroke-dashoffset 1s linear; }
+  .ring-num{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-family:'Baloo Bhaijaan 2'; font-weight:800; font-size:26px; color:var(--ink);
+  }
+  .warn-text{ font-size:12px; font-weight:700; color:var(--red); text-align:center; }
+
+  .scene-frame{
+    border-radius:18px;
+    overflow:hidden;
+    border:4px solid var(--yellow);
+    background:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:180px;
+  }
+  .scene-frame img{ display:block; width:100%; height:auto; }
+  .scene-fallback{
+    padding:30px 16px; text-align:center; font-size:13px; color:#8d8398; line-height:1.8;
+  }
+
+  /* ---------- Recall screen ---------- */
+  .recall-title{ font-family:'Baloo Bhaijaan 2'; font-size:22px; font-weight:700; text-align:center; margin-bottom:6px; color:var(--ink); }
+  .recall-sub{ font-size:12.5px; text-align:center; color:#6b6280; margin-bottom:14px; }
+  textarea{
+    width:100%; min-height:220px;
+    border:2px solid #e5dcc8;
+    border-radius:14px;
+    padding:14px;
+    font-family:'Cairo'; font-size:15px; font-weight:600;
+    color:var(--ink);
+    resize:vertical;
+    outline:none;
+    margin-bottom:14px;
+    line-height:1.8;
+  }
+  textarea:focus{ border-color:var(--blue); }
+
+  /* ---------- Results screen ---------- */
+  .score-hero{ text-align:center; margin-bottom:18px; }
+  .score-hero .big{
+    font-family:'Baloo Bhaijaan 2'; font-weight:800; font-size:56px; color:var(--red);
+    line-height:1;
+  }
+  .score-hero .lbl{ font-size:13px; font-weight:700; color:#6b6280; margin-top:4px; }
+  .verdict{ text-align:center; font-size:13.5px; color:var(--ink); margin-bottom:18px; line-height:1.8; }
+
+  .recap-grid{
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:18px;
+  }
+  .recap-item{
+    text-align:center;
+    border-radius:12px;
+    padding:10px 4px;
+    border:2px solid #e5dcc8;
+    background:#fff;
+  }
+  .recap-item.found{ border-color:var(--green); background:#eefbf2; }
+  .recap-item.missed{ opacity:0.55; }
+  .recap-item .name{ font-size:12px; font-weight:800; color:var(--ink); }
+  .recap-item .badge{ font-size:14px; margin-bottom:2px; }
+
+  footer{ margin-top:20px; font-size:11px; color:#cfc6ec; text-align:center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="eyebrow">لعبة الذاكرة البصرية</div>
+    <h1>افتكر أكبر عدد من الصور 🧠</h1>
+    <div class="subtitle">ركّزي كويس... هتختفي الصورة بعد شوية!</div>
+  </div>
+
+  <!-- START SCREEN -->
+  <div class="screen show" id="startScreen">
+    <div class="panel">
+      <div class="rules">
+        <div class="point"><span class="dot">👀</span><span>هتشوفي صورة فيها حاجات وألعاب كتير لمدة محددة.</span></div>
+        <div class="point"><span class="dot">🧠</span><span>ركزي وحاولي تحفظي أكبر عدد ممكن من الأشياء.</span></div>
+        <div class="point"><span class="dot">⏱</span><span>بعد ما الوقت يخلص، <b>هتختفي الصورة تلقائيًا</b> ومينفعش ترجعي ليها تاني.</span></div>
+        <div class="point"><span class="dot">✍️</span><span>اكتبي كل حاجة افتكرتيها في المربع اللي هيظهر بعد كده.</span></div>
+        <div class="point"><span class="dot">⭐</span><span><b>كل حاجة صح = نقطة.</b> مش لازم تفتكري كل حاجة، بس حاولي قد ما تقدري!</span></div>
+      </div>
+      <div class="time-label">اختاري مدة المشاهدة</div>
+      <div class="time-row">
+        <button class="btn-time" data-t="30">٣٠ ثانية</button>
+        <button class="btn-time active" data-t="45">٤٥ ثانية</button>
+        <button class="btn-time" data-t="60">دقيقة</button>
+      </div>
+      <button class="btn-big" id="startBtn">ابدأ اللعبة 🚀</button>
+    </div>
+  </div>
+
+  <!-- MEMORIZE SCREEN -->
+  <div class="screen" id="memorizeScreen">
+    <div class="panel">
+      <div class="countdown-wrap">
+        <div class="ring-box">
+          <svg viewBox="0 0 100 100">
+            <circle class="ring-bg" cx="50" cy="50" r="42"></circle>
+            <circle class="ring-fg" id="ringFg" cx="50" cy="50" r="42"></circle>
+          </svg>
+          <div class="ring-num" id="ringNum">٤٥</div>
+        </div>
+        <div class="warn-text">بصّي بس، ممنوع تكتبي دلوقتي! 🙈</div>
+      </div>
+      <div class="scene-frame">
+        <img id="sceneImg" src="room-scene.png" alt="غرفة مليانة ألعاب وحاجات مختلفة"
+             onerror="this.style.display='none'; document.getElementById('sceneFallback').style.display='block';">
+        <div class="scene-fallback" id="sceneFallback" style="display:none;">
+          مفيش صورة باسم <b>room-scene.png</b> جنب ملف الـ HTML ده.<br>
+          ارفعي الصورة بنفس الاسم ده في نفس مجلد اللعبة على GitHub.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECALL SCREEN -->
+  <div class="screen" id="recallScreen">
+    <div class="panel">
+      <div class="recall-title">دلوقتي اكتبي اللي فاكراه! ✍️</div>
+      <div class="recall-sub">اكتبي كل حاجة في سطر لوحده، أو افصلي بينهم بفاصلة</div>
+      <textarea id="recallInput" placeholder="مثال:&#10;صاروخ&#10;دبدوب&#10;موزة"></textarea>
+      <button class="btn-big" id="submitBtn">انتهيت! احسبي نقاطي 🏆</button>
+    </div>
+  </div>
+
+  <!-- RESULTS SCREEN -->
+  <div class="screen" id="resultsScreen">
+    <div class="panel">
+      <div class="score-hero">
+        <div class="big" id="finalScore">٠</div>
+        <div class="lbl" id="finalOutOf">من ١٧ حاجة</div>
+      </div>
+      <div class="verdict" id="verdictText"></div>
+      <div class="recap-grid" id="recapGrid"></div>
+      <button class="btn-big" id="replayBtn">العب تاني 🔄</button>
+    </div>
+  </div>
+
+  <footer>اتفرجي كويس، وخلي ذاكرتك تشتغل 💫</footer>
+</div>
+
+<script>
+  /* Answer key: items visible in room-scene.png.
+     Each item has its main Arabic name plus accepted spelling variants. */
+  const items = [
+    { id:'rocket',   names:['صاروخ'] },
+    { id:'bear',     names:['دبدوب','دب','تيدي بير','تيدي'] },
+    { id:'banana',   names:['موزة','موز'] },
+    { id:'crayons',  names:['ألوان','علبة ألوان','علبةألوان','أقلام ألوان','كرايونز'] },
+    { id:'dino',     names:['ديناصور','دينو'] },
+    { id:'clock',    names:['ساعة'] },
+    { id:'sock',     names:['شراب','جورب'] },
+    { id:'candy',    names:['حلوى','حلوي','لبانة','سكاكر'] },
+    { id:'balloon',  names:['بالونة','بالون'] },
+    { id:'book',     names:['كتاب','كتب'] },
+    { id:'car',      names:['عربية','عربية لعب','عربيةلعب','سيارة'] },
+    { id:'soccer',   names:['كرة قدم','كرة','كورة'] },
+    { id:'basket',   names:['كرة سلة','كرةسلة','بسكتبول'] },
+    { id:'train',    names:['قطر','قطار'] },
+    { id:'blocks',   names:['مكعبات','مكعب','مكعبات بناء'] },
+    { id:'backpack', names:['شنطة','شنطة ظهر','شنطةظهر','حقيبة ظهر'] },
+    { id:'skate',    names:['سكوتر بورد','لوح تزلج','سكيت بورد','سكوتربورد'] },
+  ];
+
+  const startScreen = document.getElementById('startScreen');
+  const memorizeScreen = document.getElementById('memorizeScreen');
+  const recallScreen = document.getElementById('recallScreen');
+  const resultsScreen = document.getElementById('resultsScreen');
+  const ringFg = document.getElementById('ringFg');
+  const ringNum = document.getElementById('ringNum');
+  const recallInput = document.getElementById('recallInput');
+  const finalScoreEl = document.getElementById('finalScore');
+  const finalOutOfEl = document.getElementById('finalOutOf');
+  const verdictTextEl = document.getElementById('verdictText');
+  const recapGrid = document.getElementById('recapGrid');
+
+  let selectedTime = 45;
+  let timeLeft = 45;
+  let timerInterval = null;
+
+  const RING_CIRC = 2 * Math.PI * 42;
+  ringFg.style.strokeDasharray = RING_CIRC;
+  ringFg.style.strokeDashoffset = 0;
+
+  function toArabicDigits(n){
+    const map = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+    return String(n).split('').map(d => map[d] !== undefined ? map[d] : d).join('');
+  }
+
+  document.querySelectorAll('.btn-time').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.btn-time').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedTime = parseInt(btn.dataset.t, 10);
+    });
+  });
+
+  function showScreen(el){
+    [startScreen, memorizeScreen, recallScreen, resultsScreen].forEach(s => s.classList.remove('show'));
+    el.classList.add('show');
+  }
+
+  document.getElementById('startBtn').addEventListener('click', () => {
+    timeLeft = selectedTime;
+    showScreen(memorizeScreen);
+    updateRing();
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      updateRing();
+      if(timeLeft <= 0){
+        clearInterval(timerInterval);
+        goToRecall();
+      }
+    }, 1000);
+  });
+
+  function updateRing(){
+    ringNum.textContent = toArabicDigits(timeLeft);
+    const pct = timeLeft / selectedTime;
+    ringFg.style.strokeDashoffset = RING_CIRC * (1 - pct);
+  }
+
+  function goToRecall(){
+    recallInput.value = '';
+    showScreen(recallScreen);
+    setTimeout(() => recallInput.focus(), 200);
+  }
+
+  function normalize(str){
+    return str
+      .trim()
+      .replace(/[\u064B-\u0652\u0670\u0640]/g, '')
+      .replace(/[إأآا]/g, 'ا')
+      .replace(/ة/g, 'ه')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    const raw = recallInput.value;
+    const tokens = raw.split(/[\n,،\/]+/).map(t => normalize(t)).filter(t => t.length > 0);
+
+    const foundIds = new Set();
+    items.forEach(item => {
+      const normNames = item.names.map(n => normalize(n));
+      const isFound = tokens.some(tok => normNames.includes(tok));
+      if(isFound) foundIds.add(item.id);
+    });
+
+    const score = foundIds.size;
+    finalScoreEl.textContent = toArabicDigits(score);
+    finalOutOfEl.textContent = 'من ' + toArabicDigits(items.length) + ' حاجة';
+
+    let verdict = '';
+    if(score === items.length) verdict = 'ذاكرة خرافية! افتكرتي كل حاجة 🌟';
+    else if(score >= items.length * 0.7) verdict = 'ذاكرة قوية جدًا! 👏';
+    else if(score >= items.length * 0.4) verdict = 'مش بطال، وبالتدريب هتبقي أحسن!';
+    else verdict = 'حاولي تاني وركزي أكتر المرة الجاية!';
+    verdictTextEl.textContent = verdict;
+
+    recapGrid.innerHTML = '';
+    items.forEach(item => {
+      const found = foundIds.has(item.id);
+      const div = document.createElement('div');
+      div.className = 'recap-item ' + (found ? 'found' : 'missed');
+      div.innerHTML = `
+        <div class="badge">${found ? '✅' : '⬜'}</div>
+        <div class="name">${item.names[0]}</div>
+      `;
+      recapGrid.appendChild(div);
+    });
+
+    showScreen(resultsScreen);
+  });
+
+  document.getElementById('replayBtn').addEventListener('click', () => {
+    showScreen(startScreen);
+  });
+</script>
+</body>
+</html>

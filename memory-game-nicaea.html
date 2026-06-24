@@ -28,14 +28,14 @@
       linear-gradient(160deg, var(--navy) 0%, var(--navy-2) 60%, var(--navy) 100%);
     font-family:'Cairo', sans-serif;
     color:var(--cream);
-    padding:28px 16px 60px;
+    padding:12px 10px 40px;
     display:flex;
     flex-direction:column;
     align-items:center;
   }
 
   /* ---------- Header ---------- */
-  .header{ text-align:center; max-width:640px; margin-bottom:18px; }
+  .header{ text-align:center; max-width:640px; margin-bottom:8px; }
 
   .eyebrow{
     font-size:13px;
@@ -49,7 +49,7 @@
   h1{
     font-family:'Markazi Text', serif;
     font-weight:700;
-    font-size:46px;
+    font-size:28px;
     background:linear-gradient(180deg, var(--gold-light), var(--gold));
     -webkit-background-clip:text;
     background-clip:text;
@@ -67,15 +67,15 @@
   .flourish{ width:220px; height:24px; margin:14px auto 6px; opacity:0.9; }
 
   .instructions{
-    font-size:13.5px;
+    font-size:11.5px;
     color:#d9e1f0;
     max-width:520px;
-    margin:10px auto 0;
-    line-height:1.9;
+    margin:6px auto 0;
+    line-height:1.7;
     background:rgba(255,255,255,0.04);
     border:1px solid rgba(201,162,39,0.25);
     border-radius:10px;
-    padding:10px 16px;
+    padding:7px 12px;
   }
 
   /* ---------- Stats bar ---------- */
@@ -84,15 +84,15 @@
     gap:10px;
     flex-wrap:wrap;
     justify-content:center;
-    margin:20px 0 26px;
+    margin:10px 0 14px;
   }
 
   .pill{
     background:rgba(255,255,255,0.06);
     border:1px solid rgba(201,162,39,0.35);
     border-radius:999px;
-    padding:8px 18px;
-    font-size:14px;
+    padding:6px 10px;
+    font-size:11px;
     font-weight:700;
     display:flex;
     align-items:center;
@@ -109,7 +109,7 @@
     padding:9px 22px;
     font-family:'Cairo', sans-serif;
     font-weight:800;
-    font-size:14px;
+    font-size:11px;
     cursor:pointer;
     box-shadow:0 4px 14px rgba(201,162,39,0.35);
     transition:transform .15s ease, box-shadow .15s ease;
@@ -120,22 +120,22 @@
   /* ---------- Grid ---------- */
   .board{
     display:grid;
-    grid-template-columns:repeat(5, minmax(120px, 1fr));
-    gap:14px;
+    grid-template-columns:repeat(4, 1fr);
+    gap:8px;
     width:100%;
-    max-width:880px;
+    max-width:100%;
   }
 
   @media (max-width:760px){
-    .board{ grid-template-columns:repeat(4, 1fr); gap:10px; }
-    h1{ font-size:36px; }
+    .board{ grid-template-columns:repeat(4, 1fr); gap:6px; }
+    h1{ font-size:24px; }
   }
   @media (max-width:480px){
-    .board{ grid-template-columns:repeat(3, 1fr); gap:8px; }
+    .board{ grid-template-columns:repeat(4, 1fr); gap:5px; }
   }
 
   .card{
-    aspect-ratio:3/4;
+    aspect-ratio:4/5;
     perspective:900px;
     cursor:pointer;
   }
@@ -157,7 +157,7 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    padding:8px;
+    padding:4px;
     text-align:center;
   }
 
@@ -171,7 +171,7 @@
   }
   .face-back::before{
     content:"☦";
-    font-size:30px;
+    font-size:22px;
     color:var(--gold-light);
     text-shadow:0 0 10px rgba(236,208,120,0.55);
     opacity:0.9;
@@ -183,16 +183,16 @@
     background:var(--cream);
     color:var(--ink);
     flex-direction:column;
-    gap:6px;
+    gap:3px;
     border:1.5px solid var(--gold);
     box-shadow:inset 0 0 0 3px rgba(255,255,255,0.5);
   }
 
   .tag{
-    font-size:10.5px;
+    font-size:8.5px;
     font-weight:800;
-    letter-spacing:1px;
-    padding:2px 10px;
+    letter-spacing:0.5px;
+    padding:1px 7px;
     border-radius:999px;
     text-transform:uppercase;
   }
@@ -205,7 +205,7 @@
     font-size:15px;
     line-height:1.3;
   }
-  @media (max-width:480px){ .card-text{ font-size:12.5px; } }
+  @media (max-width:480px){ .card-text{ font-size:10px; } }
 
   .card.matched .face-front{
     animation:glow 1.6s ease-in-out infinite alternate;
@@ -246,11 +246,11 @@
   .modal .icon{ font-size:40px; margin-bottom:10px; color:var(--gold-light); }
   .modal h2{
     font-family:'Markazi Text', serif;
-    font-size:30px;
+    font-size:22px;
     color:var(--gold-light);
     margin-bottom:8px;
   }
-  .modal p{ font-size:14px; color:#d9e1f0; margin-bottom:18px; line-height:1.8; }
+  .modal p{ font-size:11px; color:#d9e1f0; margin-bottom:8px; line-height:1.8; }
   .modal .result-stats{ display:flex; justify-content:center; gap:18px; margin-bottom:20px; }
   .modal .result-stats div{ font-size:13px; color:#cdd7ea; }
   .modal .result-stats span{ display:block; font-size:20px; color:var(--gold-light); font-weight:800; }

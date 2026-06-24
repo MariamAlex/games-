@@ -171,9 +171,9 @@
       </div>
       <div class="time-label">اختاري مدة المشاهدة</div>
       <div class="time-row">
-        <button class="btn-time" data-t="30">٣٠ ثانية</button>
-        <button class="btn-time active" data-t="45">٤٥ ثانية</button>
-        <button class="btn-time" data-t="60">دقيقة</button>
+        <button class="btn-time" data-t="5">٥ ثواني</button>
+        <button class="btn-time active" data-t="10">١٠ ثواني</button>
+        <button class="btn-time" data-t="15">١٥ ثانية</button>
       </div>
       <button class="btn-big" id="startBtn">ابدأ اللعبة 🚀</button>
     </div>
@@ -188,7 +188,7 @@
             <circle class="ring-bg" cx="50" cy="50" r="42"></circle>
             <circle class="ring-fg" id="ringFg" cx="50" cy="50" r="42"></circle>
           </svg>
-          <div class="ring-num" id="ringNum">٤٥</div>
+          <div class="ring-num" id="ringNum">١٠</div>
         </div>
         <div class="warn-text">بصّي بس، ممنوع تكتبي دلوقتي! 🙈</div>
       </div>
@@ -264,8 +264,8 @@
   const verdictTextEl = document.getElementById('verdictText');
   const recapGrid = document.getElementById('recapGrid');
 
-  let selectedTime = 45;
-  let timeLeft = 45;
+  let selectedTime = 10;
+  let timeLeft = selectedTime;
   let timerInterval = null;
 
   const RING_CIRC = 2 * Math.PI * 42;
